@@ -207,4 +207,19 @@ class User {
       return null;
     }
   }
+
+  async toggleFavoriteStory(storyId) {
+    let token = this.loginToken
+    try {
+      const response = await axios({
+        url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
+        method: "POST",
+        data: { token },
+      });
+
+    } catch (err) {
+      console.error("favoriteStory failed", err);
+      return null;
+    }
+  }
 }

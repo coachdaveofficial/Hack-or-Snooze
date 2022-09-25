@@ -25,9 +25,13 @@ function generateStoryMarkup(story) {
   const hostName = story.getHostName();
   return $(`
       <li id="${story.storyId}">
+        <span class="star">
+        <i class="fa-star far"></i>
+        </span>
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
         </a>
+        
         <small class="story-hostname">(${hostName})</small>
         <small class="story-author">by ${story.author}</small>
         <small class="story-user">posted by ${story.username}</small>
@@ -63,3 +67,15 @@ async function createNewStory(evt) {
 }
 
 $submitForm.on('submit', createNewStory);
+
+async function toggleFavorite(evt) {
+  evt.target.className === 'fa-star far' ? evt.target.className = 'fa-star fas' : evt.target.className = 'fa-star far';
+  let storyId = evt.target.parentElement.parentElement.id;
+  
+
+  await currentUser.toggleFavoriteStory(storyId)
+}
+
+
+
+$storiesLists.on("click", ".star", toggleFavorite)
