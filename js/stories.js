@@ -10,6 +10,7 @@ async function getAndShowStoriesOnStart() {
   $storiesLoadingMsg.remove();
 
   putStoriesOnPage();
+  checkUserFavorites();
 }
 
 /**
@@ -54,7 +55,7 @@ function putStoriesOnPage() {
 
   $allStoriesList.show();
 }
-
+// pull text from submit form and use it to call addStory function, hide form and update stories view when finished
 async function createNewStory(evt) {
   evt.preventDefault();
 
@@ -63,19 +64,39 @@ async function createNewStory(evt) {
   const url = $('#story-url').val();
  
 
-  let newStory = await storyList.addStory(currentUser, {title, url, author});
+  try {
+    await storyList.addStory(currentUser, {title, url, author});
+  } catch (error) {
+    console.log(error);
+    alert("invalid URL")
+  }
+
+  $submitForm.hide("slow")
+  await getAndShowStoriesOnStart();
 }
 
 $submitForm.on('submit', createNewStory);
 
 async function toggleFavorite(evt) {
-  evt.target.className === 'fa-star far' ? evt.target.className = 'fa-star fas' : evt.target.className = 'fa-star far';
+  // evt.target.className === 'fa-star far' ? evt.target.className = 'fa-star fas' : evt.target.className = 'fa-star far';
   let storyId = evt.target.parentElement.parentElement.id;
-  
 
-  await currentUser.toggleFavoriteStory(storyId)
+  if (evt.target.className === 'fa-star far') {
+    evt.target.className = 'fa-star fas';
+    await currentUser.toggleFavoriteStory(storyId, "POST")
+  } else if (evt.target.className === 'fa-star fas') {
+    evt.target.className = 'fa-star far';
+    await currentUser.toggleFavoriteStory(storyId, "DELETE")
+
+  }
 }
 
+$storiesLists.on("click", ".star", toggleFavorite);
 
-
-$storiesLists.on("click", ".star", toggleFavorite)
+function checkUserFavorites() {
+  for (let story of currentUser.favorites) {
+    console.log(story.storyId);
+    $(`#${story.storyId}`).find('i').className = 'fa-star fas';
+    console.log($(`#${story.storyId}`).find('i'))
+  }
+}

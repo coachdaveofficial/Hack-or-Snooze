@@ -80,11 +80,11 @@ class StoryList {
       url: `${BASE_URL}/stories`,
       method: "POST",
       data: {
-        token: token,
+        token,
         story: {
-          title: title,
-          author: author,
-          url: url
+          title,
+          author,
+          url
         }
       }
     });
@@ -208,17 +208,17 @@ class User {
     }
   }
 
-  async toggleFavoriteStory(storyId) {
+  async toggleFavoriteStory(storyId, method) {
     let token = this.loginToken
     try {
       const response = await axios({
         url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
-        method: "POST",
+        method: method,
         data: { token },
       });
 
     } catch (err) {
-      console.error("favoriteStory failed", err);
+      console.error("toggleFavoriteStory failed", err);
       return null;
     }
   }
