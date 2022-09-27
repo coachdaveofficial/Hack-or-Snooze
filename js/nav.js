@@ -10,6 +10,10 @@ function navAllStories(evt) {
   console.debug("navAllStories", evt);
   hidePageComponents();
   putStoriesOnPage();
+  $favoriteStoriesList.empty();
+
+
+
 }
 
 $body.on("click", "#nav-all", navAllStories);
@@ -40,3 +44,24 @@ function navSubmitClick(evt) {
 }
 
 $navSubmit.on("click", navSubmitClick);
+
+
+function navFavoritesClick() {
+  hidePageComponents();
+  $allStoriesList.empty();
+  $favoriteStoriesList.empty();
+
+  // loop through all of our favorites and generate HTML for them
+  for (let story of currentUser.favorites) {
+    const $favorite = generateStoryMarkup(story);
+    $favoriteStoriesList.append($favorite);
+  }
+
+  // check if user has a favorites list, if so, mark the star as checked
+  checkUserFavorites(currentUser);
+  
+  $allStoriesList.hide();
+  $favoriteStoriesList.show();
+}
+
+$navFavorites.on('click', navFavoritesClick);

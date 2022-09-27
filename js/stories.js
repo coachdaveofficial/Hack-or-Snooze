@@ -10,7 +10,7 @@ async function getAndShowStoriesOnStart() {
   $storiesLoadingMsg.remove();
 
   putStoriesOnPage();
-  checkUserFavorites();
+  
 }
 
 /**
@@ -22,8 +22,9 @@ async function getAndShowStoriesOnStart() {
 
 function generateStoryMarkup(story) {
   // console.debug("generateStoryMarkup", story);
-
+  
   const hostName = story.getHostName();
+  
   return $(`
       <li id="${story.storyId}">
         <span class="star">
@@ -38,6 +39,7 @@ function generateStoryMarkup(story) {
         <small class="story-user">posted by ${story.username}</small>
       </li>
     `);
+    
 }
 
 /** Gets list of stories from server, generates their HTML, and puts on page. */
@@ -47,11 +49,16 @@ function putStoriesOnPage() {
 
   $allStoriesList.empty();
 
+  
+
   // loop through all of our stories and generate HTML for them
   for (let story of storyList.stories) {
     const $story = generateStoryMarkup(story);
     $allStoriesList.append($story);
   }
+
+  // check if user has a favorites list, if so, mark the star as checked
+  checkUserFavorites(currentUser);
 
   $allStoriesList.show();
 }
@@ -77,6 +84,7 @@ async function createNewStory(evt) {
 
 $submitForm.on('submit', createNewStory);
 
+
 async function toggleFavorite(evt) {
   // evt.target.className === 'fa-star far' ? evt.target.className = 'fa-star fas' : evt.target.className = 'fa-star far';
   let storyId = evt.target.parentElement.parentElement.id;
@@ -84,19 +92,25 @@ async function toggleFavorite(evt) {
   if (evt.target.className === 'fa-star far') {
     evt.target.className = 'fa-star fas';
     await currentUser.toggleFavoriteStory(storyId, "POST")
-  } else if (evt.target.className === 'fa-star fas') {
+  } 
+  else if (evt.target.className === 'fa-star fas') {
     evt.target.className = 'fa-star far';
     await currentUser.toggleFavoriteStory(storyId, "DELETE")
-
   }
 }
 
 $storiesLists.on("click", ".star", toggleFavorite);
 
+// check user.favorites and grab storyIds, use storyIds to then update star icons on DOM to be checked or not
 function checkUserFavorites() {
-  for (let story of currentUser.favorites) {
-    console.log(story.storyId);
-    $(`#${story.storyId}`).find('i').className = 'fa-star fas';
-    console.log($(`#${story.storyId}`).find('i'))
+  let favorites = currentUser.favorites;
+  for (let story of favorites) {
+    let starElement = $(`#${story.storyId} .fa-star`);
+    starElement[0].className = 'fa-star fas';
+    console.log(starElement[0]);
   }
 }
+
+
+
+
