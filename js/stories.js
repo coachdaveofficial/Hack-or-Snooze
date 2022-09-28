@@ -24,7 +24,7 @@ function generateStoryMarkup(story) {
   // console.debug("generateStoryMarkup", story);
   
   const hostName = story.getHostName();
-  
+
   return $(`
       <li id="${story.storyId}">
         <span class="star">
@@ -86,8 +86,8 @@ $submitForm.on('submit', createNewStory);
 
 
 async function toggleFavorite(evt) {
-  // evt.target.className === 'fa-star far' ? evt.target.className = 'fa-star fas' : evt.target.className = 'fa-star far';
-  let storyId = evt.target.parentElement.parentElement.id;
+  
+  let storyId = evt.target.closest('li').id;
 
   if (evt.target.className === 'fa-star far') {
     evt.target.className = 'fa-star fas';
@@ -97,19 +97,44 @@ async function toggleFavorite(evt) {
     evt.target.className = 'fa-star far';
     await currentUser.toggleFavoriteStory(storyId, "DELETE")
   }
+  
 }
 
 $storiesLists.on("click", ".star", toggleFavorite);
 
 // check user.favorites and grab storyIds, use storyIds to then update star icons on DOM to be checked or not
 function checkUserFavorites() {
+  
   let favorites = currentUser.favorites;
   for (let story of favorites) {
-    let starElement = $(`#${story.storyId} .fa-star`);
-    starElement[0].className = 'fa-star fas';
-    console.log(starElement[0]);
+    let starElement = $(`#${story.storyId} .fa-star`)[0];
+    starElement.className = 'fa-star fas';
+    console.log(starElement);
   }
 }
+
+async function deleteOwnStory(evt) {
+  let storyId = evt.target.closest('li').id;
+
+  let token = currentUser.loginToken
+    try {
+      const response = await axios({
+        url: `${BASE_URL}/stories/${storyId}`,
+        method: 'DELETE',
+        data: { token },
+      });
+      $myStoriesList.empty();
+      $myStoriesList.show();
+    } catch (err) {
+      console.error("toggleFavoriteStory failed", err);
+      return null;
+    }
+  }
+
+  $storiesLists.on('click', '.trash-can', deleteOwnStory)
+
+
+
 
 
 

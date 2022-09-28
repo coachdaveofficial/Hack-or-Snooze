@@ -216,10 +216,13 @@ class User {
         method: method,
         data: { token },
       });
+      this.favorites = response.data.user.favorites.map(s => new Story(s));
+
 
     } catch (err) {
       console.error("toggleFavoriteStory failed", err);
       return null;
     }
   }
+
 }

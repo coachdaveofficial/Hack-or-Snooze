@@ -65,3 +65,34 @@ function navFavoritesClick() {
 }
 
 $navFavorites.on('click', navFavoritesClick);
+
+function navMyStoriesClick() {
+  hidePageComponents();
+  $allStoriesList.empty();
+  $favoriteStoriesList.empty();
+  $myStoriesList.empty();
+
+
+  // loop through all of our stories and generate HTML for them
+  // also prepending trash can icon to delete story
+  for (let story of currentUser.ownStories) {
+    const $myStory = generateStoryMarkup(story);
+    $myStoriesList.append($myStory);
+    $('.star').prepend(
+      `<span class="trash-can">
+        <i class="fas fa-trash-alt"></i>
+        </span>`
+    );
+
+
+
+  }
+  $allStoriesList.hide();
+  $favoriteStoriesList.hide();
+  $myStoriesList.show();
+  // check if user has a favorites list, if so, mark the star as checked
+  checkUserFavorites(currentUser);
+}
+
+$navMyStories.on('click', navMyStoriesClick);
+

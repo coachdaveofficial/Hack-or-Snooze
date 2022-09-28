@@ -10,6 +10,7 @@ const $allStoriesList = $("#all-stories-list");
 
 const $storiesLists = $(".stories-list");
 const $favoriteStoriesList = $("#favorite-stories-list");
+const $myStoriesList = $("#favorite-stories-list");
 
 
 const $loginForm = $("#login-form");
@@ -21,6 +22,7 @@ const $navUserProfile = $("#nav-user-profile");
 const $navLogOut = $("#nav-logout");
 const $navSubmit = $('#nav-submit');
 const $navFavorites = $('#nav-favorites');
+const $navMyStories = $('#nav-my-stories');
 
 
 
