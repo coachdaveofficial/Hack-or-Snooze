@@ -225,4 +225,18 @@ class User {
     }
   }
 
+  async deleteStory(storyId) {
+    let token = this.loginToken
+    try {
+      const response = await axios({
+        url: `${BASE_URL}/stories/${storyId}`,
+        method: 'DELETE',
+        data: { token },
+      });
+    } catch (err) {
+      console.error("deleteOwnStory failed", err);
+      return null;
+    }
+  }
+
 }

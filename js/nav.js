@@ -11,6 +11,8 @@ function navAllStories(evt) {
   hidePageComponents();
   putStoriesOnPage();
   $favoriteStoriesList.empty();
+  $submitForm.hide();
+
 
 
 
@@ -50,6 +52,13 @@ function navFavoritesClick() {
   hidePageComponents();
   $allStoriesList.empty();
   $favoriteStoriesList.empty();
+  $myStoriesList.empty();
+
+  if (currentUser.favorites.length === 0) {
+    $favoriteStoriesList.append(
+      `<div> There are no favorites yet! <//div>`
+    );
+  }
 
   // loop through all of our favorites and generate HTML for them
   for (let story of currentUser.favorites) {
@@ -60,17 +69,27 @@ function navFavoritesClick() {
   // check if user has a favorites list, if so, mark the star as checked
   checkUserFavorites(currentUser);
   
+  
+  $submitForm.hide();
   $allStoriesList.hide();
   $favoriteStoriesList.show();
 }
 
 $navFavorites.on('click', navFavoritesClick);
 
-function navMyStoriesClick() {
+async function navMyStoriesClick() {
   hidePageComponents();
   $allStoriesList.empty();
   $favoriteStoriesList.empty();
   $myStoriesList.empty();
+  storyList = await StoryList.getStories();
+
+
+  if (currentUser.ownStories.length === 0) {
+    $myStoriesList.append(
+      `<div> You haven't posted a story yet! <//div>`
+    );
+  }
 
 
   // loop through all of our stories and generate HTML for them
@@ -87,6 +106,7 @@ function navMyStoriesClick() {
 
 
   }
+  $submitForm.hide();
   $allStoriesList.hide();
   $favoriteStoriesList.hide();
   $myStoriesList.show();

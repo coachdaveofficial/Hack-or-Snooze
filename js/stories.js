@@ -106,29 +106,27 @@ $storiesLists.on("click", ".star", toggleFavorite);
 function checkUserFavorites() {
   
   let favorites = currentUser.favorites;
-  for (let story of favorites) {
-    let starElement = $(`#${story.storyId} .fa-star`)[0];
-    starElement.className = 'fa-star fas';
-    console.log(starElement);
+  try {
+    for (let story of favorites) {
+      let starElement = $(`#${story.storyId} .fa-star`)[0];
+      starElement.className = 'fa-star fas';
+      console.log(starElement);
+    } 
+  } catch(err) {
+    console.log('there are no favorites on the page, see full error below. \n', err)
   }
 }
 
 async function deleteOwnStory(evt) {
   let storyId = evt.target.closest('li').id;
 
-  let token = currentUser.loginToken
-    try {
-      const response = await axios({
-        url: `${BASE_URL}/stories/${storyId}`,
-        method: 'DELETE',
-        data: { token },
-      });
-      $myStoriesList.empty();
-      $myStoriesList.show();
-    } catch (err) {
-      console.error("toggleFavoriteStory failed", err);
-      return null;
-    }
+  await currentUser.deleteStory(storyId);
+  $myStoriesList.empty();
+  storyList = await StoryList.getStories();
+
+  $myStoriesList.show();
+
+  
   }
 
   $storiesLists.on('click', '.trash-can', deleteOwnStory)
