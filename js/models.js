@@ -24,8 +24,7 @@ class Story {
   /** Parses hostname out of URL and returns it. */
 
   getHostName() {
-    // UNIMPLEMENTED: complete this function!
-    return "hostname.com";
+    return this.url;
   }
 }
 
@@ -74,7 +73,6 @@ class StoryList {
    */
 
   async addStory(user, {title, author, url}) {
-    // UNIMPLEMENTED: complete this function!
     let token = user.loginToken;
     const response = await axios({
       url: `${BASE_URL}/stories`,
@@ -88,7 +86,8 @@ class StoryList {
         }
       }
     });
-    return new Story(response.data);
+
+    return new Story(response.data.story);
   }
 }
 
@@ -211,13 +210,11 @@ class User {
   async toggleFavoriteStory(storyId, method) {
     let token = this.loginToken
     try {
-      const response = await axios({
+      return await axios({
         url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
         method: method,
         data: { token },
       });
-      this.favorites = response.data.user.favorites.map(s => new Story(s));
-
 
     } catch (err) {
       console.error("toggleFavoriteStory failed", err);

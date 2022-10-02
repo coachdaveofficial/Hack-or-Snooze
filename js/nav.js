@@ -37,8 +37,14 @@ function updateNavOnLogin() {
   console.debug("updateNavOnLogin");
   $(".main-nav-links").show();
   $navLogin.hide();
+  $loginForm.hide();
+  $signupForm.hide();
   $navLogOut.show();
+
   $navUserProfile.text(`${currentUser.username}`).show();
+  $favoriteStoriesList.show();
+  $myStoriesList.show();
+  $navAuthorizedTools.show();
 }
 
 function navSubmitClick(evt) {
@@ -66,8 +72,7 @@ function navFavoritesClick() {
     $favoriteStoriesList.append($favorite);
   }
 
-  // check if user has a favorites list, if so, mark the star as checked
-  checkUserFavorites(currentUser);
+  
   
   
   $submitForm.hide();
@@ -82,36 +87,28 @@ async function navMyStoriesClick() {
   $allStoriesList.empty();
   $favoriteStoriesList.empty();
   $myStoriesList.empty();
-  storyList = await StoryList.getStories();
-
 
   if (currentUser.ownStories.length === 0) {
     $myStoriesList.append(
       `<div> You haven't posted a story yet! <//div>`
     );
   }
-
-
   // loop through all of our stories and generate HTML for them
   // also prepending trash can icon to delete story
   for (let story of currentUser.ownStories) {
     const $myStory = generateStoryMarkup(story);
     $myStoriesList.append($myStory);
-    $('.star').prepend(
+    $(`#${story.storyId}`).prepend(
       `<span class="trash-can">
         <i class="fas fa-trash-alt"></i>
         </span>`
     );
-
-
-
   }
   $submitForm.hide();
   $allStoriesList.hide();
   $favoriteStoriesList.hide();
   $myStoriesList.show();
-  // check if user has a favorites list, if so, mark the star as checked
-  checkUserFavorites(currentUser);
+  
 }
 
 $navMyStories.on('click', navMyStoriesClick);

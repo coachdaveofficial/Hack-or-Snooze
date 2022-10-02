@@ -23,6 +23,7 @@ const $navLogOut = $("#nav-logout");
 const $navSubmit = $('#nav-submit');
 const $navFavorites = $('#nav-favorites');
 const $navMyStories = $('#nav-my-stories');
+const $navAuthorizedTools = $('#authorized-nav');
 
 
 

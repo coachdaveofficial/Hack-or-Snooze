@@ -25,11 +25,22 @@ function generateStoryMarkup(story) {
   
   const hostName = story.getHostName();
 
+  const loggedIn = Boolean(currentUser)
+
+  let starHTMLClass = 'far';
+
+  if (loggedIn) {
+    if (currentUser.favorites.some(s => s.storyId === story.storyId)) {
+      starHTMLClass = 'fas';
+      }; 
+    }
+
+  const starHTML = `<span class="star"><i class="fa-star ${starHTMLClass}"></i></span>`;
+
+
   return $(`
       <li id="${story.storyId}">
-        <span class="star">
-        <i class="fa-star far"></i>
-        </span>
+        ${loggedIn ? starHTML : ""}
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
         </a>
@@ -57,8 +68,7 @@ function putStoriesOnPage() {
     $allStoriesList.append($story);
   }
 
-  // check if user has a favorites list, if so, mark the star as checked
-  checkUserFavorites(currentUser);
+  
 
   $allStoriesList.show();
 }
@@ -72,7 +82,13 @@ async function createNewStory(evt) {
  
 
   try {
-    await storyList.addStory(currentUser, {title, url, author});
+    let newStory = await storyList.addStory(currentUser, {title, url, author});
+    currentUser.ownStories.push(newStory);
+
+    $('#author-name').val(''); 
+    $('#story-title').val('');
+    $('#story-url').val('');
+
   } catch (error) {
     console.log(error);
     alert("invalid URL")
@@ -88,41 +104,45 @@ $submitForm.on('submit', createNewStory);
 async function toggleFavorite(evt) {
   
   let storyId = evt.target.closest('li').id;
+  let method;
 
   if (evt.target.className === 'fa-star far') {
     evt.target.className = 'fa-star fas';
-    await currentUser.toggleFavoriteStory(storyId, "POST")
+    method = 'POST';
   } 
   else if (evt.target.className === 'fa-star fas') {
     evt.target.className = 'fa-star far';
-    await currentUser.toggleFavoriteStory(storyId, "DELETE")
+    method = 'DELETE';
   }
+  const response = await currentUser.toggleFavoriteStory(storyId, method);
+  currentUser.favorites = response.data.user.favorites.map(s => new Story(s));
   
 }
 
 $storiesLists.on("click", ".star", toggleFavorite);
 
-// check user.favorites and grab storyIds, use storyIds to then update star icons on DOM to be checked or not
-function checkUserFavorites() {
-  
-  let favorites = currentUser.favorites;
-  try {
-    for (let story of favorites) {
-      let starElement = $(`#${story.storyId} .fa-star`)[0];
-      starElement.className = 'fa-star fas';
-      console.log(starElement);
-    } 
-  } catch(err) {
-    console.log('there are no favorites on the page, see full error below. \n', err)
-  }
-}
+
 
 async function deleteOwnStory(evt) {
+  console.log(evt.target)
   let storyId = evt.target.closest('li').id;
 
   await currentUser.deleteStory(storyId);
-  $myStoriesList.empty();
-  storyList = await StoryList.getStories();
+  $(`#${storyId}`).remove();
+  // remove story from global story list
+  for (let storyIndex in storyList.stories) {
+    if (storyList.stories[storyIndex].storyId == storyId) { 
+        storyList.stories.splice(storyIndex, 1);
+        console.log('deleted!', storyIndex)
+    }
+  }
+  // remove story from current user story list
+  for (let storyIndex in currentUser.ownStories) {
+    if (currentUser.ownStories[storyIndex].storyId == storyId) { 
+        currentUser.ownStories.splice(storyIndex, 1);
+    }
+  }
+
 
   $myStoriesList.show();
 
