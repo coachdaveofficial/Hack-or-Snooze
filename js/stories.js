@@ -100,7 +100,7 @@ async function createNewStory(evt) {
 
 $submitForm.on('submit', createNewStory);
 
-
+// on click, toggle a story as favorite
 async function toggleFavorite(evt) {
   
   let storyId = evt.target.closest('li').id;
